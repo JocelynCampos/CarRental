@@ -3,28 +3,29 @@ package se.edugrade.carrental.entities;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "customer")
 public class Customer
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 12)
+    @Column(name = "social_security_number", unique = true, nullable = false, length = 12)
     private String socialSecurityNumber;
 
-    @Column(nullable = false, length = 40)
+    @Column(name = "first_name", nullable = false, length = 40)
     private String firstName;
 
-    @Column(nullable = false, length = 40)
+    @Column(name = "last_name", nullable = false, length = 40)
     private String lastName;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "address", nullable = false, length = 50)
     private String address;
 
-    @Column(nullable = false, length = 20)
+    @Column(name = "phone_number", nullable = false, length = 20)
     private String phoneNumber;
 
-    @Column(nullable = true, length = 30)
+    @Column(name = "email", nullable = true, length = 30)
     private String email;
 
     public Customer() {
