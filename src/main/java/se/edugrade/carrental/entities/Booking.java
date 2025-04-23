@@ -1,6 +1,7 @@
 package se.edugrade.carrental.entities;
 
 import jakarta.persistence.*;
+import se.edugrade.carrental.repositories.CarRepository;
 
 import java.time.LocalDate;
 
@@ -22,6 +23,14 @@ public class Booking
 
     public Booking() {
     }
+
+    @ManyToOne
+    @JoinColumn(name = "car_id")
+    private Car car;
+    @ManyToOne
+
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Booking(int totalCost, LocalDate dateWhenPickedUp, LocalDate dateWhenTurnedIn) {
         this.totalCost = totalCost;
@@ -60,4 +69,14 @@ public class Booking
     public void setDateWhenTurnedIn(LocalDate dateWhenTurnedIn) {
         this.dateWhenTurnedIn = dateWhenTurnedIn;
     }
+
+
+    public Car getCar() { return car; }
+
+    public void setCar(Car car) { this.car = car; }
+
+    public User getUser() { return user; }
+
+    public void setUser(User user) { this.user = user; }
+
 }
