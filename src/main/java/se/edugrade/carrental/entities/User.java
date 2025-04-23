@@ -10,7 +10,7 @@ public class User
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "social_security_number", unique = true, nullable = false, length = 20)
+    @Column(name = "social_security_number", unique = true, nullable = false, length = 15)
     private String socialSecurityNumber;
 
     @Column(name = "first_name", nullable = false, length = 40)
