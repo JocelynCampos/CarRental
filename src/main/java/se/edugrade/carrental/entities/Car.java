@@ -3,7 +3,7 @@ package se.edugrade.carrental.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table (name = "car")
+@Table (name = "cars")
 public class Car
 {
     @Id
@@ -22,7 +22,7 @@ public class Car
     @Column(name = "registration_number", nullable = false, length = 10)
     private String registrationNumber;
 
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private CarStatus status;
 
