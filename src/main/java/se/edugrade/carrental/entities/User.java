@@ -3,14 +3,14 @@ package se.edugrade.carrental.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "social_security_number", unique = true, nullable = false, length = 12)
+    @Column(name = "social_security_number", unique = true, nullable = false, length = 20)
     private String socialSecurityNumber;
 
     @Column(name = "first_name", nullable = false, length = 40)
