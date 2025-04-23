@@ -3,8 +3,8 @@ package se.edugrade.carrental.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "customer")
-public class Customer
+@Table(name = "user")
+public class User
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,16 +28,27 @@ public class Customer
     @Column(name = "email", nullable = true, length = 30)
     private String email;
 
-    public Customer() {
+    @Enumerated(EnumType.STRING)
+    @Column (nullable = false)
+    private Role role;
+
+
+    public enum Role {
+        CUSTOMER,
+        ADMIN
     }
 
-    public Customer(String socialSecurityNumber, String firstName, String lastName, String address, String phoneNumber, String email) {
+    public User() {
+    }
+
+    public User(String socialSecurityNumber, String firstName, String lastName, String address, String phoneNumber, String email, Role role) {
         this.socialSecurityNumber = socialSecurityNumber;
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        this.role = role;
     }
 
     public Long getId() {
@@ -95,4 +106,14 @@ public class Customer
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 }
+
+
