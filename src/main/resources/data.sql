@@ -1,4 +1,4 @@
-INSERT INTO user (id, social_security_number, first_name, last_name, address, email, phone_number, role) VALUES
+INSERT INTO users (id, social_security_number, first_name, last_name, address, email, phone_number, role) VALUES
 (1, '19850101-1234', 'Anna', 'Svensson', 'Eduvägen 40', 'anna.svensson@gmail.com', '070-9638527', 'CUSTOMER'),
 (2, '19900215-5678', 'Erik', 'Johansson', 'Granvägen 50', 'erik.j@outlook.se', '072-3692587', 'CUSTOMER'),
 (3, '19751530-9101', 'Maria', 'Lindberg', 'Granitvägen 1', 'lindberg1@live.se', '076-7418529', 'CUSTOMER'),
