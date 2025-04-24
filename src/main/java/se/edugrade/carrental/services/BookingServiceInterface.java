@@ -1,6 +1,7 @@
 package se.edugrade.carrental.services;
 
-public interface BookingServiceInterface
-{
+import java.time.LocalDate;
 
+public interface BookingServiceInterface {
+    public int calculateTotalCost(LocalDate startDate, LocalDate endDate, int pricePerDay);
 }

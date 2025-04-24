@@ -3,26 +3,27 @@ package se.edugrade.carrental.entities;
 import jakarta.persistence.*;
 
 @Entity
+@Table (name = "cars")
 public class Car
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "price_per_day", nullable = false)
     private Integer pricePerDay;
 
-    @Column(nullable = false, length = 40)
+    @Column(name = "brand", nullable = false, length = 40)
     private String brand;
 
-    @Column(nullable = false, length = 40)
+    @Column(name = "model", nullable = false, length = 40)
     private String model;
 
-    @Column(nullable = false, length = 10)
+    @Column(name = "registration_number", nullable = false, length = 10)
     private String registrationNumber;
 
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private CarStatus status;
 
     public Car() {
