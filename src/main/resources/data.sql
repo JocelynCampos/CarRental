@@ -11,3 +11,5 @@ INSERT INTO cars (id, price_per_day, brand, model, registration_number, status) 
 (3, 659, 'MG', 'EHS', 'RFK46B', 'SERVICE'),
 (4, 719, 'Volvo', 'XC40', 'ZDH02L', 'FREE'),
 (5, 899, 'BMW', 'I4', 'WMB007', 'BOOKED');
+
+SELECT 1;
