@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
+/*Erik Edman*/
+
 @Entity
 public class Booking
 {
