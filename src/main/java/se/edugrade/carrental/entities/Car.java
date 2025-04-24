@@ -2,6 +2,8 @@ package se.edugrade.carrental.entities;
 
 import jakarta.persistence.*;
 
+/*Erik Edman*/
+
 @Entity
 @Table (name = "cars")
 public class Car
