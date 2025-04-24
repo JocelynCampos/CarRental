@@ -46,7 +46,7 @@ public class CarController
         return carService.updateCar(car);
     }
 
-    @DeleteMapping("/admin/deletecar")
+    @DeleteMapping("/admin/removecar")
     public void deleteCar(@RequestParam Long id) {
         carService.removeCar(id);
     }
