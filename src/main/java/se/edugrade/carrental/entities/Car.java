@@ -21,8 +21,8 @@ public class Car
     @Column(nullable = false, length = 10)
     private String registrationNumber;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private CarStatus status;
 
     public Car() {
