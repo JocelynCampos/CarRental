@@ -13,7 +13,8 @@ public class BookingController {
 
     private final BookingRepository bookingRepository;
 
-    public BookingController(BookingRepository bookingRepository) {
+    public BookingController(BookingRepository bookingRepository, BookingRepository bookingRepository1) {
+        this.bookingRepository = bookingRepository1;
     }
 
 
@@ -28,6 +29,4 @@ public class BookingController {
     för kreativitet)
     */
 
-    @RequestMapping("/getAll")
-    @ResponseBody
 }
