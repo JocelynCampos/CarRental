@@ -1,16 +1,15 @@
 package se.edugrade.carrental.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.edugrade.carrental.entities.Booking;
 import se.edugrade.carrental.entities.Car;
 import se.edugrade.carrental.entities.User;
 import se.edugrade.carrental.repositories.BookingRepository;
 import se.edugrade.carrental.repositories.CarRepository;
-import se.edugrade.carrental.repositories.UserRepository;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 public class BookingService implements BookingServiceInterface {
@@ -42,7 +41,11 @@ public class BookingService implements BookingServiceInterface {
 
     }
 
+    private List<Booking> getAvtiveBookings(LocalDate startDate, LocalDate endDate, int pricePerDay) {}
 
+    private List<Booking> getAllBookings() {
+        return bookingRepository.findAll();
+    }
 
 
 
@@ -54,5 +57,3 @@ public class BookingService implements BookingServiceInterface {
 
 
 }
-
-
