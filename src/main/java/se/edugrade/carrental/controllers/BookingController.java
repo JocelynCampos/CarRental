@@ -59,7 +59,7 @@ public class BookingController {
     }
 
     @DeleteMapping("/admin/removeorder") {
-
+        //Varför funkar inte ovan kod (method delen??)?
     }
 
     @DeleteMapping("/admin/removeorders-beforedate/{id}") {
