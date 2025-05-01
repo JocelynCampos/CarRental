@@ -3,19 +3,33 @@
 
 <configuration status="info">
     <properties>
-        <property name="layout">%d[%t]%5level%logger - %m%n</property>
+        <property name="LOG_PATTERN_GENERAL">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</property>
+        <property name="LOG_PATTERN_ADMIN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %highlight{%-5level} %logger{36} - %msg%n</property>
+        <property name="LOG_DIR">logs</property>
     </properties>
+
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="${layout}"/>
+            <PatternLayout pattern="%style{%d{HH:mm:ss.SSS}}{cyan} [%style{%t}{magenta}] %highlight{%-5level} %style{%logger{36}}{blue} - %msg%n" />
         </Console>
 
-        <File name="LogFile" fileName="logs/app.log">
-            <PatternLayout pattern="${layout}"/>
+        <!-- Generell loggfil -->
+        <File name="LogFile" fileName="${LOG_DIR}/app.log">
+            <PatternLayout pattern="${LOG_PATTERN_GENERAL}"/>
+        </File>
+
+        <!--Loggfil för admins-->
+        <File name="AdminFile" fileName="${LOG_DIR}/admin.log">
+            <PatternLayout pattern = "${LOG_PATTERN_ADMIN}"/>
         </File>
     </Appenders>
 
     <Loggers>
+        <logger name = "AdminLogger" level="info" additivity="false">
+            <appender-ref ref="AdminFile"/>
+        </logger>
+
+        <!--Root Logger-->
         <Root level="info">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="LogFile"/>
