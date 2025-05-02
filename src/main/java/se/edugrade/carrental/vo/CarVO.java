@@ -1,5 +1,3 @@
-// src/main/java/se/edugrade/carrental/vo/CarVO.java
-
 package se.edugrade.carrental.vo;
 
 import se.edugrade.carrental.entities.Car.CarStatus;
