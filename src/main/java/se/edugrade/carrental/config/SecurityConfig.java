@@ -11,7 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 
 /*Erik Edman 24/04: Påbörjat konfigfilen för security. Nu kan man logga in på h2-console. Alla data hade laddats in korrekt till
-* databasen.*/
+ * databasen.*/
 
 /*05/01: SecurityConfig är färdig. TODO: ladda in Customers via databas istället för hårdkoda användare*/
 
