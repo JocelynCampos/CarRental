@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import se.edugrade.carrental.entities.Car;
+import se.edugrade.carrental.vo.CarVO;
 import se.edugrade.carrental.services.CarServiceInterface;
 
 import java.util.List;
@@ -20,8 +21,8 @@ public class CarController
     // Kund Endpoints
 
     @GetMapping("/cars")
-    public List<Car> getAvailableCars() {
-        return carService.getAvailableCars();
+    public List<CarVO> getAllPublicCars() {
+        return carService.getAllCarsPublic();
     }
 
     // Admin Endpoints

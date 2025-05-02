@@ -3,6 +3,7 @@ package se.edugrade.carrental.services;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.edugrade.carrental.entities.Car;
+import se.edugrade.carrental.vo.CarVO;
 import se.edugrade.carrental.repositories.CarRepository;
 
 import java.util.List;
@@ -27,6 +28,21 @@ public class CarService implements CarServiceInterface
     public List<Car> getAllCars() {
         return carRepository.findAll();
     }
+
+    @Override
+    public List<CarVO> getAllCarsPublic() {
+        return carRepository.findAll().stream()
+                .filter(car -> car.getStatus() == Car.CarStatus.FREE)
+                .map(car -> new CarVO(
+                        car.getId(),
+                        car.getPricePerDay(),
+                        car.getBrand(),
+                        car.getModel(),
+                        car.getStatus()
+                ))
+                .toList();
+    }
+
 
     @Override
     public Car addCar(Car car) {
