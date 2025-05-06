@@ -20,7 +20,6 @@ public class BookingController {
         this.bookingService = bookingService;
     }
 
-
     /************************ CUSTOMER ENDPOINTS ******************************/
 
     @PostMapping("/addorder")
