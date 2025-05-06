@@ -22,7 +22,7 @@ public class BookingController {
 
     /************************ CUSTOMER ENDPOINTS ******************************/
 
-    @PostMapping("/addorder")
+    @PostMapping("/addorder") //Skapa order
     public Booking createOrder(@RequestParam Long userId,
                                @RequestParam Long carId,
                                @RequestParam String startDate,
@@ -36,36 +36,42 @@ public class BookingController {
         );
     }
 
-    @GetMapping("/activeorders")
+    @PutMapping("/cancelorder") //Avboka order
+    public ResponseEntity <String> cancelOrder(@RequestParam Long bookingId) {
+        bookingService.cancelBooking(bookingId);
+        return ResponseEntity.ok("Booking cancelled");
+    }
+
+    @GetMapping("/activeorders") //Se aktiva bokningar
     public List<Booking> getActiveOrders() {
         return bookingService.getActiveOrders();
     }
 
-    @GetMapping("/orders")
+    @GetMapping("/orders") //se tidigare bokningar
     public List<Booking> getExpiredOrders() {
         return bookingService.expiredBookings();
     }
 
     /************************* ADMIN ENDPOINTS ***************************/
 
-    @GetMapping("/admin/activeorders")
+    @GetMapping("/admin/activeorders") //Lista alla aktiva ordrar
     public List<Booking> getAllActiveOrders() {
         return bookingService.getActiveOrders();
     }
 
-    @GetMapping("/admin/orders")
+    @GetMapping("/admin/orders") // Lista historiska ordrar
     public List<Booking> getAllExpiredOrders() {
         return bookingService.expiredBookings();
     }
 
 
-    @DeleteMapping("/admin/removeorder")
+    @DeleteMapping("/admin/removeorder") //Ta bort bokning från systemet
     public ResponseEntity <Void> deleteOrder(@RequestParam Long bookingId) {
         bookingService.deleteBooking(bookingId);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/admin/removeorders-beforedate/{date}")
+    @DeleteMapping("/admin/removeorders-beforedate/{date}") //
     public ResponseEntity<Void> deleteOrdersBeforeDate(@PathVariable String date) {
         LocalDate targetDate = LocalDate.parse(date);
         bookingService.deleteBookingsBeforeDate(targetDate);
