@@ -4,13 +4,13 @@ import org.springframework.stereotype.Service;
 import se.edugrade.carrental.entities.Booking;
 import se.edugrade.carrental.entities.Car;
 import se.edugrade.carrental.entities.User;
+import se.edugrade.carrental.exceptions.ResourceNotFoundException;
 import se.edugrade.carrental.repositories.BookingRepository;
 import se.edugrade.carrental.repositories.CarRepository;
 import se.edugrade.carrental.repositories.UserRepository;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,9 +30,9 @@ public class BookingService implements BookingServiceInterface {
 
     public Booking makeBooking(Long user_id, Long car_id, LocalDate startDate, LocalDate endDate){
         User user = userRepository.findById(user_id)
-                .orElseThrow(() -> new RuntimeException("User Not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", user_id));
         Car car = carRepository.findById(car_id)
-                .orElseThrow(() -> new RuntimeException("Car Not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Car", "id", car_id));
 
         Booking newBooking = new Booking();
         newBooking.setUser(user);
@@ -46,21 +46,6 @@ public class BookingService implements BookingServiceInterface {
         return bookingRepository.save(newBooking);
 
     }
-
-/******************************************************************************************************
- • POST /api/v1/addorder - Skapa order (hyra bil)
- • GET /api/v1/activeorders - Se aktiva bokningar
- • GET /api/v1/orders - Se tidigare bokningar
- • GET /api/v1/admin/activeorders - Lista alla aktiva ordrar
- • GET /api/v1/admin/orders - Lista historiska ordrar
- • DELETE /api/v1/admin/removeorder - Ta bort bokning från systemet
- • DELETE /api/v1/admin/removeorders-beforedate/{date}
- • GET /api/v1/admin/statistics - Visa statistik såsom mest hyrda bilmärke under en viss
- period. Antal gånger varje bil hyrts ut, vanligaste hyresperiod (antal dagar), genomsnittlig
- kostnad per hyresorder. Total intäkt per bil. Total intäkt under en viss tidsperiod. (Till
- denna endpoint kan man ange pathvariables för att kunna visa specifik information) (Utrymme
- för kreativitet)
- **********************************************************************************************/
 
     public Booking saveBooking(Booking booking ) {
         return bookingRepository.save(booking);
@@ -80,7 +65,7 @@ public class BookingService implements BookingServiceInterface {
 
     public Booking getBookingById(Long booking_id) {
         return bookingRepository.findById(booking_id)
-                .orElseThrow(() -> new RuntimeException("Booking Not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", booking_id));
     }
 
     public List<Booking> findAllBookings() {
