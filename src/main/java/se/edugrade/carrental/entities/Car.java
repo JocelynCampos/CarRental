@@ -26,7 +26,6 @@ public class Car
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private CarStatus status;
 
     public Car() {
