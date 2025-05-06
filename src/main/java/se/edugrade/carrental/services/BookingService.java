@@ -101,6 +101,14 @@ public class BookingService implements BookingServiceInterface {
                 .collect(Collectors.toList());
     }
 
+    public void deleteBookingsBeforeDate(LocalDate targetDate) {
+        List<Booking> bookingsToDelete = bookingRepository.findAll().stream()
+                .filter(booking -> booking.getDateWhenTurnedIn().isBefore(targetDate))
+                .collect(Collectors.toList());
+        bookingRepository.deleteAll(bookingsToDelete);
+    }
+
+
     @Override
     public int calculateTotalCost(LocalDate startDate, LocalDate endDate, int pricePerDay) {
         long numberOfDays = ChronoUnit.DAYS.between(startDate, endDate);

@@ -1,9 +1,9 @@
 package se.edugrade.carrental.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.edugrade.carrental.entities.Booking;
-import se.edugrade.carrental.repositories.BookingRepository;
 import se.edugrade.carrental.services.BookingService;
 
 import java.time.LocalDate;
@@ -21,19 +21,22 @@ public class BookingController {
     }
 
     /******************************************************************************************************
-    • POST /api/v1/addorder - Skapa order (hyra bil)
-    • GET /api/v1/activeorders - Se aktiva bokningar
-    • GET /api/v1/orders - Se tidigare bokningar
-    • GET /api/v1/admin/activeorders - Lista alla aktiva ordrar
-    • GET /api/v1/admin/orders - Lista historiska ordrar
-    • DELETE /api/v1/admin/removeorder - Ta bort bokning från systemet
-    • DELETE /api/v1/admin/removeorders-beforedate/{date}
+    • POST /api/v1/addorder - Skapa order (hyra bil)                            DONE
+    • GET /api/v1/activeorders - Se aktiva bokningar                            DONE
+    • GET /api/v1/orders - Se tidigare bokningar                                DONE??
+    • GET /api/v1/admin/activeorders - Lista alla aktiva ordrar                 INTE DONE correct?? eller? för inte gjort till admin enbart?
+    • GET /api/v1/admin/orders - Lista historiska ordrar                        DONE
+    • DELETE /api/v1/admin/removeorder - Ta bort bokning från systemet          DONE
+    • DELETE /api/v1/admin/removeorders-beforedate/{date}                       DONE
     • GET /api/v1/admin/statistics - Visa statistik såsom mest hyrda bilmärke under en viss
         period. Antal gånger varje bil hyrts ut, vanligaste hyresperiod (antal dagar), genomsnittlig
         kostnad per hyresorder. Total intäkt per bil. Total intäkt under en viss tidsperiod. (Till
         denna endpoint kan man ange pathvariables för att kunna visa specifik information) (Utrymme
-        för kreativitet)
+        för kreativitet)                                                        UNDONE
      *********************************************************************************************************/
+
+    /************************ CUSTOMER ENDPOINTS ******************************/
+
     @PostMapping("/addorder")
     public Booking createOrder(@RequestParam Long userId,
                                @RequestParam Long carId,
@@ -50,23 +53,43 @@ public class BookingController {
 
     @GetMapping("/activeorders")
     public List<Booking> getActiveOrders() {
-
+        return bookingService.getActiveOrders();
     }
 
     @GetMapping("/orders")
-    public List<Booking> getOrders() {
-
+    public List<Booking> getExpiredOrders() {
+        return bookingService.expiredBookings();
     }
 
-    @DeleteMapping("/admin/removeorder") {
-        //Varför funkar inte ovan kod (method delen??)?
+    /************************* ADMIN ENDPOINTS ***************************/
+
+    @GetMapping("/admin/activeorders")
+    public List<Booking> getAllActiveOrders() {
+        return bookingService.getActiveOrders();
     }
 
-    @DeleteMapping("/admin/removeorders-beforedate/{id}") {
-
+    @GetMapping("/admin/orders")
+    public List<Booking> getAllExpiredOrders() {
+        return bookingService.expiredBookings();
     }
 
-    @GetMapping("/admin/statistics") {
+
+    @DeleteMapping("/admin/removeorder")
+    public ResponseEntity <Void> deleteOrder(@RequestParam Long bookingId) {
+        bookingService.deleteBooking(bookingId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/admin/removeorders-beforedate/{date}")
+    public ResponseEntity<Void> deleteOrdersBeforeDate(@PathVariable String date) {
+        LocalDate targetDate = LocalDate.parse(date);
+        bookingService.deleteBookingsBeforeDate(targetDate);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/admin/statistics")
+    public String getStatistics() {
+        return "unfinished method";
 
     }
 
