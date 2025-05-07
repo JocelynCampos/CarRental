@@ -25,10 +25,19 @@ public class Booking
     public Booking() {
     }
 
-    public Booking(int totalCost, LocalDate dateWhenPickedUp, LocalDate dateWhenTurnedIn) {
+    @ManyToOne
+    @JoinColumn(name = "car_id")
+    private Car car;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public Booking(int totalCost, LocalDate dateWhenPickedUp, LocalDate dateWhenTurnedIn, Car car, User user) {
         this.totalCost = totalCost;
         this.dateWhenPickedUp = dateWhenPickedUp;
         this.dateWhenTurnedIn = dateWhenTurnedIn;
+        this.car = car;
+        this.user = user;
     }
 
     public Long getId() {
@@ -62,4 +71,14 @@ public class Booking
     public void setDateWhenTurnedIn(LocalDate dateWhenTurnedIn) {
         this.dateWhenTurnedIn = dateWhenTurnedIn;
     }
+
+
+    public Car getCar() { return car; }
+
+    public void setCar(Car car) { this.car = car; }
+
+    public User getUser() { return user; }
+
+    public void setUser(User user) { this.user = user; }
+
 }
