@@ -72,15 +72,6 @@ public class BookingController {
         bookingService.deleteBookingsBeforeDate(targetDate);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/admin/statistics")
-    public String getStatistics() {
-        return "unfinished method";
-
-    }
-
-
-
 }
 
 
