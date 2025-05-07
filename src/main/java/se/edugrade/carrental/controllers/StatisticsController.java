@@ -25,10 +25,20 @@ public class StatisticsController
     @ResponseBody
     public ResponseEntity<?> getStatistics(@PathVariable String type)
     {
-        switch (type)
+        switch (type.toLowerCase())
         {
             case "period":
                 return ResponseEntity.ok(statisticsService.getMostPopularPeriod());
+            case "brand":
+                return ResponseEntity.ok(statisticsService.getMostRentedBrand());
+            case "rental":
+                return ResponseEntity.ok(statisticsService.getCarRentalCounts());
+            case "bookingcost":
+                return ResponseEntity.ok(statisticsService.getAverageBookingCost());
+            case "revenuepercar":
+                return ResponseEntity.ok(statisticsService.getRevenuePerCar());
+            case "totalrevenue":
+                return ResponseEntity.ok(statisticsService.getTotalRevenue());
             default:
                 return ResponseEntity.badRequest().body("Unknown type");
         }

@@ -6,10 +6,16 @@ INSERT INTO users (id, social_security_number, first_name, last_name, address, e
 (5, '19950505-7890', 'Elin', 'Andersson', 'Askgatan 85', 'el.an@hotmail.com', '070-9517531', 'CUSTOMER');
 
 INSERT INTO cars (id, price_per_day, brand, model, registration_number, status) VALUES
-(1, 542, 'Toyota', 'Corolla', 'UET267', 'FREE'),
+(1, 542, 'Toyota', 'Corolla', 'UET267', 'BOOKED'),
 (2, 629, 'Mercedes Benz', 'A180', 'GYC001', 'BOOKED'),
 (3, 659, 'MG', 'EHS', 'RFK46B', 'SERVICE'),
 (4, 719, 'Volvo', 'XC40', 'ZDH02L', 'FREE'),
-(5, 899, 'BMW', 'I4', 'WMB007', 'BOOKED');
+(5, 899, 'BMW', 'I4', 'WMB007', 'FREE'),
+(6, 499, 'Toyota', 'Yaris', 'ABC123', 'BOOKED');
+
+INSERT INTO booking (id, total_cost, date_when_picked_up, date_when_turned_in, car_id, user_id) VALUES
+(1, 1084, '2025-04-01', '2025-04-03', 1, 1), -- Toyota, Anna
+(2, 1887, '2025-04-05', '2025-04-08', 2, 2), -- Mercedes, Erik
+(3, 2636, '2025-04-10', '2025-04-14', 6, 3); -- Toyota, Maria
 
 SELECT 1;

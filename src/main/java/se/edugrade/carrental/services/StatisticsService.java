@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @Service
 public class StatisticsService implements StatisticsServiceInterface
@@ -73,27 +74,56 @@ public class StatisticsService implements StatisticsServiceInterface
     }
 
     @Override
-    public String getMostRentedBrand() {
-        return "";
+    public String getMostRentedBrand()
+    {
+        return bookingService.findAllBookings().stream()
+                .collect(Collectors.groupingBy(b -> b.getCar().getBrand(), Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("No data");
     }
 
     @Override
-    public Map<String, Long> getCarRentalCounts() {
-        return Map.of();
+    public Map<String, Long> getCarRentalCounts()
+    {
+        return bookingService.findAllBookings().stream()
+                .collect(Collectors.groupingBy(
+                        b-> b.getCar().getRegistrationNumber(),
+                        Collectors.counting()
+                ));
     }
 
     @Override
-    public double getAverageBookingCost() {
-        return 0;
+    public double getAverageBookingCost()
+    {
+        double nrOfBookings = bookingService.findAllBookings().size();
+        double cost = 0;
+        List<Booking> bookings = bookingService.findAllBookings();
+
+        for(Booking booking : bookings)
+        {
+            cost += booking.getTotalCost();
+        }
+
+        return cost / nrOfBookings;
     }
 
     @Override
-    public Map<String, Integer> getRevenuePerCar() {
-        return Map.of();
+    public Map<String, Integer> getRevenuePerCar()
+    {
+        return bookingService.findAllBookings().stream()
+                .collect(Collectors.groupingBy(
+                        b -> b.getCar().getRegistrationNumber(),
+                        Collectors.summingInt(Booking::getTotalCost)
+                ));
     }
 
     @Override
-    public Integer getTotalRevenue() {
-        return 0;
+    public Integer getTotalRevenue()
+    {
+        return bookingService.findAllBookings().stream()
+                .map(Booking::getTotalCost)
+                .reduce(0, Integer::sum);
     }
 }
