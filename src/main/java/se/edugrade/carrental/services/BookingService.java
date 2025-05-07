@@ -53,16 +53,9 @@ public class BookingService implements BookingServiceInterface {
         bookingRepository.delete(booking);
     }
 
-    public Booking saveBooking(Booking booking ) {
-        return bookingRepository.save(booking);
-    }
 
     public void deleteBooking (Long booking_id) {
         bookingRepository.deleteById(booking_id);
-    }
-
-    public Booking update(Booking booking) {
-        return bookingRepository.save(booking);
     }
 
     public Booking findBookingById(Long booking_id) {
