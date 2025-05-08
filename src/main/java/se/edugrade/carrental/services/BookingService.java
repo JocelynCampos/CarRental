@@ -59,8 +59,14 @@ public class BookingService implements BookingServiceInterface {
     }
 
 
-    public void deleteBooking (Long booking_id) {
+    public void deleteBooking (Long booking_id, boolean isAdmin) {
+        Booking booking = bookingRepository.findById(booking_id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", booking_id));
+
         bookingRepository.deleteById(booking_id);
+        if (isAdmin) {
+            printDeletedBookingsToAdmin(booking);
+        }
     }
 
     public Booking findBookingById(Long booking_id) {
@@ -102,6 +108,14 @@ public class BookingService implements BookingServiceInterface {
         bookingRepository.deleteAll(bookingsToDelete);
 
         adminLogger.info("Deleted " + bookingsToDelete.size() + " bookings before " + targetDate);
+    }
+
+    private void printDeletedBookingsToAdmin(Booking booking) {
+        if (booking != null) {
+            adminLogger.info("You deleted booking " + booking.getId()
+            + "that belonged to user " + booking.getUser().getSocialSecurityNumber() +
+                    " for car " + booking.getCar().getBrand() + booking.getCar() + booking.getCar().getModel());
+        }
     }
 
 
