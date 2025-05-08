@@ -31,7 +31,7 @@ public class BookingController {
                             @RequestParam String endDate) {
 
 
-        return bookingService.makeBooking(
+        return bookingService.createBooking(
                 userId,
                 carId,
                 LocalDate.parse(startDate),
@@ -60,8 +60,8 @@ public class BookingController {
     }
 
     @GetMapping("/activeorders") //Se aktiva bokningar
-    public ResponseEntity<List<Booking>> activeOrders() {
-        List<Booking> activeOrders = bookingService.getActiveOrders();
+    public ResponseEntity<List<Booking>> activeOrders(@RequestParam Long userId) {
+        List<Booking> activeOrders = bookingService.usersActiveBookings(userId);
         if (activeOrders.isEmpty()) {
             return ResponseEntity.noContent().build();
         }

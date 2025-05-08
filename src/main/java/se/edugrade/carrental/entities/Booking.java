@@ -22,6 +22,10 @@ public class Booking
     @Column
     private LocalDate dateWhenTurnedIn;
 
+    @Enumerated(EnumType.STRING)
+    @Column
+    private BookingStatus status;
+
     public Booking() {
     }
 
@@ -32,12 +36,19 @@ public class Booking
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Booking(int totalCost, LocalDate dateWhenPickedUp, LocalDate dateWhenTurnedIn, Car car, User user) {
+    public Booking(int totalCost, LocalDate dateWhenPickedUp, LocalDate dateWhenTurnedIn, Car car, User user, BookingStatus status) {
         this.totalCost = totalCost;
         this.dateWhenPickedUp = dateWhenPickedUp;
         this.dateWhenTurnedIn = dateWhenTurnedIn;
         this.car = car;
         this.user = user;
+        this.status = BookingStatus.ACTIVE;
+    }
+
+    public enum BookingStatus {
+        ACTIVE,
+        CANCELLED,
+        COMPLETED
     }
 
     public Long getId() {
@@ -72,6 +83,13 @@ public class Booking
         this.dateWhenTurnedIn = dateWhenTurnedIn;
     }
 
+    public BookingStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(BookingStatus status) {
+        this.status = status;
+    }
 
     public Car getCar() { return car; }
 

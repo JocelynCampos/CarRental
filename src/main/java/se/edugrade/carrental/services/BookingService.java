@@ -30,7 +30,7 @@ public class BookingService implements BookingServiceInterface {
     }
 
 
-    public Booking makeBooking(Long user_id, Long car_id, LocalDate startDate, LocalDate endDate){
+    public Booking createBooking(Long user_id, Long car_id, LocalDate startDate, LocalDate endDate){
         User user = userRepository.findById(user_id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", user_id));
         Car car = carRepository.findById(car_id)
@@ -116,6 +116,15 @@ public class BookingService implements BookingServiceInterface {
             + "that belonged to user " + booking.getUser().getSocialSecurityNumber() +
                     " for car " + booking.getCar().getBrand() + booking.getCar() + booking.getCar().getModel());
         }
+    }
+
+    public List<Booking> usersActiveBookings(Long user_id) {
+        User user = userRepository.findById(user_id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", user_id));
+        return bookingRepository.findAll().stream()
+                .filter(booking -> booking.getUser().getId().equals(user_id))
+                .filter(booking -> booking.getStatus() == Booking.BookingStatus.ACTIVE)
+                .collect(Collectors.toList());
     }
 
 
