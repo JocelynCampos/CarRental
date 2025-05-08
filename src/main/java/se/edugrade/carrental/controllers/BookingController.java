@@ -100,7 +100,7 @@ public class BookingController {
 
     @DeleteMapping("/admin/removeorder") //Ta bort bokning från systemet
     public ResponseEntity <Void> deleteOrder(@RequestParam Long bookingId) {
-        bookingService.deleteBooking(bookingId);
+        bookingService.deleteBooking(bookingId, true);
         return ResponseEntity.noContent().build();
     }
 
