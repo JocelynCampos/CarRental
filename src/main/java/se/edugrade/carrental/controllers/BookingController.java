@@ -1,11 +1,13 @@
 package se.edugrade.carrental.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.edugrade.carrental.entities.Booking;
 import se.edugrade.carrental.services.BookingService;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,6 +30,7 @@ public class BookingController {
                                @RequestParam String startDate,
                                @RequestParam String endDate) {
 
+
         return bookingService.makeBooking(
                 userId,
                 carId,
@@ -37,9 +40,23 @@ public class BookingController {
     }
 
     @PutMapping("/cancelorder") //Avboka order
-    public ResponseEntity<String> cancelOrder(@RequestParam Long bookingId) {
+    public ResponseEntity<String> cancelOrder(@RequestParam Long bookingId, Principal principal) {
+        Booking booking = bookingService.getBookingById(bookingId);
+
+        String loggedInUser = principal.getName();
+
+        //Ser till att avbokingen sker av respektive användare
+        if (!booking.getUser().getSocialSecurityNumber().equals(loggedInUser)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not your booking to cancel.");
+        }
+
+        if (!bookingService.isBookingActiveOrFuture(booking)) {
+            return ResponseEntity.badRequest().body("Cancellation of previous bookings not possible.");
+        }
+
         bookingService.cancelBooking(bookingId);
-        return ResponseEntity.ok("Booking cancelled");
+
+        return ResponseEntity.ok("Booking cancelled.");
     }
 
     @GetMapping("/activeorders") //Se aktiva bokningar
@@ -68,7 +85,7 @@ public class BookingController {
         if (adminActiveOrders.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(bookingService.getActiveOrders());
+        return ResponseEntity.ok(adminActiveOrders);
     }
 
     @GetMapping("/admin/orders") // Lista historiska ordrar

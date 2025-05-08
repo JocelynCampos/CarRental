@@ -12,6 +12,7 @@ import se.edugrade.carrental.repositories.UserRepository;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +21,7 @@ public class BookingService implements BookingServiceInterface {
     private BookingRepository bookingRepository;
     private CarRepository carRepository;
     private UserRepository userRepository;
+    private static final Logger adminLogger = Logger.getLogger("adminLogger");
 
     public BookingService(BookingRepository bookingRepository,CarRepository carRepository,UserRepository userRepository) {
         this.bookingRepository = bookingRepository;
@@ -50,6 +52,9 @@ public class BookingService implements BookingServiceInterface {
     public void cancelBooking(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
+        if (!isBookingActiveOrFuture(booking)) {
+            throw new IllegalStateException("Booking can not be cancelled.");
+        }
         bookingRepository.delete(booking);
     }
 
@@ -85,11 +90,18 @@ public class BookingService implements BookingServiceInterface {
                 .collect(Collectors.toList());
     }
 
+    public boolean isBookingActiveOrFuture(Booking booking) {
+        LocalDate today = LocalDate.now();
+        return booking.getDateWhenTurnedIn().isAfter(today);
+    }
+
     public void deleteBookingsBeforeDate(LocalDate targetDate) {
         List<Booking> bookingsToDelete = bookingRepository.findAll().stream()
                 .filter(booking -> booking.getDateWhenTurnedIn().isBefore(targetDate))
                 .collect(Collectors.toList());
         bookingRepository.deleteAll(bookingsToDelete);
+
+        adminLogger.info("Deleted " + bookingsToDelete.size() + " bookings before " + targetDate);
     }
 
 
