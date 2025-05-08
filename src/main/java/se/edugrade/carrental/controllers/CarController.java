@@ -3,6 +3,8 @@ package se.edugrade.carrental.controllers;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import se.edugrade.carrental.entities.Car;
 import se.edugrade.carrental.vo.CarVO;
 import se.edugrade.carrental.services.CarServiceInterface;
@@ -21,34 +23,40 @@ public class CarController
     // Kund Endpoints
 
     @GetMapping("/cars")
-    public List<CarVO> getAllPublicCars() {
-        return carService.getAllCarsPublic();
+    public ResponseEntity<List<CarVO>> getAllPublicCars() {
+        List<CarVO> cars = carService.getAllCarsPublic();
+        return ResponseEntity.ok(cars);
     }
 
     // Admin Endpoints
 
     @GetMapping("/admin/cars")
-    public List<Car> getAvailableCarsAdmin() {
-        return carService.getAvailableCars();
+    public ResponseEntity<List<Car>> getAvailableCars() {
+        List<Car> cars = carService.getAvailableCars();
+        return ResponseEntity.ok(cars);
     }
 
     @GetMapping("/admin/allcars")
-    public List<Car> getAllCars() {
-        return carService.getAllCars();
+    public ResponseEntity<List<Car>> getAllCars() {
+        List<Car> cars = carService.getAllCars();
+        return ResponseEntity.ok(cars);
     }
 
     @PostMapping("/admin/addcar")
-    public Car addCar(@RequestBody Car car) {
-        return carService.addCar(car);
+    public ResponseEntity<Car> addCar(@RequestBody Car car) {
+        Car saved = carService.addCar(car);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @PutMapping("/admin/updatecar")
-    public Car updateCar(@RequestBody Car car) {
-        return carService.updateCar(car);
+    public ResponseEntity<Car> updateCar(@RequestBody Car car) {
+        Car updated = carService.updateCar(car);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/admin/removecar")
-    public void deleteCar(@RequestParam Long id) {
+    public ResponseEntity<Void> deleteCar(@RequestParam Long id) {
         carService.removeCar(id);
+        return ResponseEntity.noContent().build();
     }
 }
