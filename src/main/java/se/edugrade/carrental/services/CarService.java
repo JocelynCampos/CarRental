@@ -3,6 +3,7 @@ package se.edugrade.carrental.services;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.edugrade.carrental.entities.Car;
+import se.edugrade.carrental.exceptions.ResourceNotFoundException;
 import se.edugrade.carrental.vo.CarVO;
 import se.edugrade.carrental.repositories.CarRepository;
 
@@ -55,7 +56,7 @@ public class CarService implements CarServiceInterface
         if (existing.isPresent()) {
             return carRepository.save(updatedCar);
         }
-        throw new RuntimeException("Car not found");
+        throw new ResourceNotFoundException("Car", "id", updatedCar.getId()); //Kastar RecourseNotFoundException istället för default exeption
     }
 
     @Override
