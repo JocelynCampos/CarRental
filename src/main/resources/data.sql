@@ -7,7 +7,7 @@ INSERT INTO users (id, social_security_number, first_name, last_name, address, e
 
 INSERT INTO cars (id, price_per_day, brand, model, registration_number, status) VALUES
 (1, 542, 'Toyota', 'Corolla', 'UET267', 'FREE'),
-(2, 629, 'Mercedes Benz', 'A180', 'GYC001', 'BOOKED'),
+(2, 629, 'Mercedes Benz', 'A180', 'GYC279', 'BOOKED'),
 (3, 659, 'MG', 'EHS', 'RFK46B', 'SERVICE'),
 (4, 719, 'Volvo', 'XC40', 'ZDH02L', 'FREE'),
 (5, 899, 'BMW', 'I4', 'WMB007', 'BOOKED');
