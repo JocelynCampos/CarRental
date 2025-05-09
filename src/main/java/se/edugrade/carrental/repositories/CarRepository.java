@@ -9,7 +9,4 @@ import se.edugrade.carrental.entities.Car;
 public interface CarRepository extends JpaRepository<Car, Long>
 {
 
-    //Example<? extends Car> id(Long id);
-
-    //Example<? extends Car> id(Long id);
 }
