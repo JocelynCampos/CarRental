@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface StatisticsServiceInterface
 {
-    Pair<LocalDate, LocalDate> getMostPopularPeriod();
+    String getMostPopularPeriod();
     String getMostRentedBrand();
     Map<String, Long> getCarRentalCounts();
     double getAverageBookingCost();

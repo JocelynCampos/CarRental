@@ -6,7 +6,9 @@ import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.edugrade.carrental.entities.Booking;
+import se.edugrade.carrental.exceptions.ResourceNotFoundException;
 
+import java.lang.module.ResolutionException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +27,13 @@ public class StatisticsService implements StatisticsServiceInterface
     }
 
     @Override
-    public Pair<LocalDate, LocalDate> getMostPopularPeriod()
+    public String getMostPopularPeriod()
     {
         List<Booking> bookings = bookingService.findAllBookings();
 
         if(bookings.isEmpty())
         {
-            return null;
+            throw new ResourceNotFoundException("Bookings", "List<Booking>", bookings);
         }
 
         // Step 1: Create a list of events: +1 for start, -1 for end + 1
@@ -70,7 +72,14 @@ public class StatisticsService implements StatisticsServiceInterface
             bestEnd = events.lastKey();
         }
 
-        return bestStart != null && bestEnd != null ? new Pair(bestStart, bestEnd) : null;
+        if(bestStart != null && bestEnd != null)
+        {
+            return "Most popular period: " + bestStart +" to " + bestEnd;
+        }
+        else
+        {
+            throw new NullPointerException();
+        }
     }
 
     @Override
