@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.edugrade.carrental.entities.Booking;
+import se.edugrade.carrental.entities.User;
 import se.edugrade.carrental.services.BookingService;
+import se.edugrade.carrental.services.UserService;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -54,14 +56,18 @@ public class BookingController {
             return ResponseEntity.badRequest().body("Cancellation of previous bookings not possible.");
         }
 
-        bookingService.cancelBooking(bookingId);
+        bookingService.cancelUserBooking(bookingId);
 
         return ResponseEntity.ok("Booking cancelled.");
     }
 
-    @GetMapping("/activeorders") //Se aktiva bokningar
-    public ResponseEntity<List<Booking>> activeOrders(@RequestParam Long userId) {
-        List<Booking> activeOrders = bookingService.usersActiveBookings(userId);
+    @GetMapping("/activeorders") //Se aktiva bokningar användare
+    public ResponseEntity<List<Booking>> activeOrders(Principal principal) {
+        String loggedInUser = principal.getName();
+
+        User user = bookingService.getUserRepository()
+                .findby
+        List<Booking> activeOrders = bookingService.getUserActiveOrders(userId);
         if (activeOrders.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -69,8 +75,8 @@ public class BookingController {
     }
 
     @GetMapping("/orders") //se tidigare bokningar
-    public ResponseEntity<List<Booking>> orders() {
-        List<Booking> orders = bookingService.expiredBookings();
+    public ResponseEntity<List<Booking>> orders(Long userId) {
+        List<Booking> orders = bookingService.getUserExpiredBookings(userId);
         if (orders.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -81,7 +87,7 @@ public class BookingController {
 
     @GetMapping("/admin/activeorders") //Lista alla aktiva ordrar
     public ResponseEntity<List<Booking>> adminActiveOrders() {
-        List<Booking> adminActiveOrders = bookingService.getActiveOrders();
+        List<Booking> adminActiveOrders = bookingService.getAdminActiveOrders();
         if (adminActiveOrders.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -90,7 +96,7 @@ public class BookingController {
 
     @GetMapping("/admin/orders") // Lista historiska ordrar
     public ResponseEntity <List<Booking>> adminOrders() {
-        List<Booking> adminExpiredOrders = bookingService.expiredBookings();
+        List<Booking> adminExpiredOrders = bookingService.getAdminExpiredBookings();
         if (adminExpiredOrders.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -100,7 +106,7 @@ public class BookingController {
 
     @DeleteMapping("/admin/removeorder") //Ta bort bokning från systemet
     public ResponseEntity <Void> adminRemoveOrder(@RequestParam Long bookingId) {
-        bookingService.deleteBooking(bookingId, true);
+        bookingService.deleteBookingAdmin(bookingId, true);
         return ResponseEntity.noContent().build();
     }
 

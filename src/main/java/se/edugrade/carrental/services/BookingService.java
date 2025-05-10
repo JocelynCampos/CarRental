@@ -29,7 +29,9 @@ public class BookingService implements BookingServiceInterface {
         this.userRepository = userRepository;
     }
 
+    /*********************** Användare ***************************/
 
+    //Skapa order
     public Booking createBooking(Long user_id, Long car_id, LocalDate startDate, LocalDate endDate){
         User user = userRepository.findById(user_id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", user_id));
@@ -49,7 +51,8 @@ public class BookingService implements BookingServiceInterface {
 
     }
 
-    public void cancelBooking(Long bookingId) {
+    //Avboka order
+    public void cancelUserBooking(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
         if (!isBookingActiveOrFuture(booking)) {
@@ -58,16 +61,68 @@ public class BookingService implements BookingServiceInterface {
         bookingRepository.delete(booking);
     }
 
+    //Se aktiva bokningar
+    public List<Booking> getUserActiveOrders(Long userId) {
+        LocalDate today = LocalDate.now();
+        return bookingRepository.findAll().stream()
+                .filter(booking -> booking.getUser().getId().equals(userId))
+                .filter(booking -> booking.getStatus() == Booking.BookingStatus.ACTIVE)
+                .filter(booking -> booking.getDateWhenPickedUp().isBefore(today) &&
+                        booking.getDateWhenTurnedIn().isAfter(today))
+                .collect(Collectors.toList());
+    }
 
-    public void deleteBooking (Long booking_id, boolean isAdmin) {
+    //Se tidigare bokningar
+    public List<Booking> getUserExpiredBookings(Long userId) {
+        LocalDate today = LocalDate.now();
+        return bookingRepository.findAll().stream()
+                .filter(booking -> booking.getUser().getId().equals(userId))
+                .filter(booking -> booking.getDateWhenTurnedIn().isBefore(today))
+                .collect(Collectors.toList());
+    }
+
+    /************************ Admin **************************/
+
+    //Aktiva ordrar
+    public List<Booking> getAdminActiveOrders() {
+        LocalDate today = LocalDate.now();
+        return bookingRepository.findAll().stream()
+                .filter(booking -> booking.getStatus() == Booking.BookingStatus.ACTIVE)
+                .filter(booking -> booking.getDateWhenPickedUp().isBefore(today)
+                        && booking.getDateWhenTurnedIn().isAfter(today))
+                .collect(Collectors.toList());
+    }
+
+    //Lista historiska ordrar
+    public List<Booking> getAdminExpiredBookings() {
+        LocalDate today = LocalDate.now();
+        return bookingRepository.findAll().stream()
+                .filter(booking -> booking.getDateWhenTurnedIn().isBefore(today))
+                .filter(booking -> booking.getStatus() == Booking.BookingStatus.ACTIVE)
+                .collect(Collectors.toList());
+    }
+
+    //Ta bort bokning från systemet
+    public void deleteBookingAdmin(Long booking_id, boolean isAdmin) {
         Booking booking = bookingRepository.findById(booking_id)
-                        .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", booking_id));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", booking_id));
 
         bookingRepository.deleteById(booking_id);
         if (isAdmin) {
             printDeletedBookingsToAdmin(booking);
         }
     }
+
+    //Ta bort bokning före specifikt datum
+    public void deleteBookingsBeforeDate(LocalDate targetDate) {
+        List<Booking> bookingsToDelete = bookingRepository.findAll().stream()
+                .filter(booking -> booking.getDateWhenTurnedIn().isBefore(targetDate))
+                .collect(Collectors.toList());
+        bookingRepository.deleteAll(bookingsToDelete);
+
+        adminLogger.info("Deleted " + bookingsToDelete.size() + " bookings before " + targetDate);
+    }
+
 
     public Booking findBookingById(Long booking_id) {
         return getBookingById(booking_id);
@@ -82,33 +137,11 @@ public class BookingService implements BookingServiceInterface {
         return bookingRepository.findAll();
     }
 
-    public List<Booking> getActiveOrders() {
-        LocalDate today = LocalDate.now();
-        return bookingRepository.findAll().stream()
-                .filter(booking -> booking.getDateWhenPickedUp().isBefore(today) && booking.getDateWhenTurnedIn().isAfter(today))
-                .collect(Collectors.toList());
-    }
-
-    public List<Booking> expiredBookings() {
-        LocalDate today = LocalDate.now();
-        return bookingRepository.findAll().stream()
-                .filter(booking -> booking.getDateWhenTurnedIn().isBefore(today))
-                .collect(Collectors.toList());
-    }
-
     public boolean isBookingActiveOrFuture(Booking booking) {
         LocalDate today = LocalDate.now();
         return booking.getDateWhenTurnedIn().isAfter(today);
     }
 
-    public void deleteBookingsBeforeDate(LocalDate targetDate) {
-        List<Booking> bookingsToDelete = bookingRepository.findAll().stream()
-                .filter(booking -> booking.getDateWhenTurnedIn().isBefore(targetDate))
-                .collect(Collectors.toList());
-        bookingRepository.deleteAll(bookingsToDelete);
-
-        adminLogger.info("Deleted " + bookingsToDelete.size() + " bookings before " + targetDate);
-    }
 
     private void printDeletedBookingsToAdmin(Booking booking) {
         if (booking != null) {
@@ -117,16 +150,6 @@ public class BookingService implements BookingServiceInterface {
                     " for car " + booking.getCar().getBrand() + booking.getCar() + booking.getCar().getModel());
         }
     }
-
-    public List<Booking> usersActiveBookings(Long user_id) {
-        User user = userRepository.findById(user_id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", user_id));
-        return bookingRepository.findAll().stream()
-                .filter(booking -> booking.getUser().getId().equals(user_id))
-                .filter(booking -> booking.getStatus() == Booking.BookingStatus.ACTIVE)
-                .collect(Collectors.toList());
-    }
-
 
     @Override
     public int calculateTotalCost(LocalDate startDate, LocalDate endDate, int pricePerDay) {
