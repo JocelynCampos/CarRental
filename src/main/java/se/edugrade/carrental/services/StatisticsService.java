@@ -72,14 +72,7 @@ public class StatisticsService implements StatisticsServiceInterface
             bestEnd = events.lastKey();
         }
 
-        if(bestStart != null && bestEnd != null)
-        {
-            return "Most popular period: " + bestStart +" to " + bestEnd;
-        }
-        else
-        {
-            throw new NullPointerException();
-        }
+        return "Most popular period: " + bestStart +" to " + bestEnd;
     }
 
     @Override
@@ -108,6 +101,7 @@ public class StatisticsService implements StatisticsServiceInterface
     {
         double nrOfBookings = bookingService.findAllBookings().size();
         double cost = 0;
+
         List<Booking> bookings = bookingService.findAllBookings();
 
         for(Booking booking : bookings)
