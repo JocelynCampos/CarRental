@@ -5,6 +5,8 @@ import se.edugrade.carrental.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 // Mohamed
 
 @Service
@@ -34,6 +36,7 @@ public class UserService implements UserServiceInterface {
 
     @Override
     public User saveUser(User user) {
+
         return userRepository.save(user);
     }
 
@@ -41,5 +44,32 @@ public class UserService implements UserServiceInterface {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+
+    // Kamran Akbari
+
+    public List <User> findAll() {
+        return userRepository.findAll();
+    }
+
+    public User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public Boolean deleteById(Long id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    public User findBySocialSecurityNumber(String socialSecurityNumber) {
+        return userRepository.findBySocialSecurityNumber(socialSecurityNumber).orElse(null);
+    }
+
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
 }
 

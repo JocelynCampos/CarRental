@@ -1,58 +1,76 @@
 package se.edugrade.carrental.controllers;
 
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import se.edugrade.carrental.entities.Booking;
-import se.edugrade.carrental.entities.Car;
 import se.edugrade.carrental.entities.User;
-import se.edugrade.carrental.services.*;
+import se.edugrade.carrental.services.UserService;
+
 
 import java.util.List;
-// Kamran Akbari
+                      // Kamran Akbari
 @RestController
 @RequestMapping("/api/v1")
-public class CustomerController{
+public class CustomerController {
 
-    private final BookingService bookingService;
-    private final CarService carService;
     private final UserService userService;
 
-    public CustomerController(BookingService bookingService, CarService carService, UserService userService) {
-        this.bookingService = bookingService;
-        this.carService = carService;
+    public CustomerController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping ("/cars")
-    public ResponseEntity<List<Car>> getAvailableCars() {
-        return ResponseEntity.ok(carService.getAvailableCars());
+    @PutMapping("/updateinfo")
+    public ResponseEntity<?> updateCustomerInfo(@RequestBody User updatedUser) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String socialSecurityNumber = auth.getName();
+
+        User existingUser = userService.findBySocialSecurityNumber(socialSecurityNumber);
+        if (existingUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        existingUser.setFirstName(updatedUser.getFirstName());
+        existingUser.setLastName(updatedUser.getLastName());
+        existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+        existingUser.setAddress(updatedUser.getAddress());
+        existingUser.setEmail(updatedUser.getEmail());
+        // (dock ej personnumret)
+
+        userService.save(existingUser);
+        return ResponseEntity.ok(existingUser);
     }
 
-    @PostMapping ("/addorder")
-    public ResponseEntity<Booking> createBooking(@RequestBody Booking booking) {
-        return ResponseEntity.ok(bookingService.createBooking(booking));
+    @GetMapping("/admin/customers")
+    public ResponseEntity<List<User>> getAllCustomers() {
+        return ResponseEntity.ok(userService.findAll());
     }
 
-    @PutMapping("/cancelorder/{bookingId}")
-    public ResponseEntity<String> cancelBooking(@PathVariable Long bookingId) {
-        bookingService.cancel(bookingId);
-        return ResponseEntity.ok("Booking with ID " + bookingId + " cancelled successfully. ");
+    @GetMapping ("/admin/customer/{id}")
+    public ResponseEntity<User> getCustomerById(@PathVariable long id) {
+        User  user = userService.findById(id);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(user);
     }
 
-    @GetMapping ("/activeorders/{personnummer}")
-    public ResponseEntity<List<Booking>> getActiveBookings(@PathVariable String personnummer) {
-        return ResponseEntity.ok(bookingService.getActiveBookingsForCustomer(personnummer));
+    @DeleteMapping ("/admin/removecustomer/{id}")
+    public ResponseEntity<?> deleteCustomerById(@PathVariable long id) {
+        boolean deleted = userService.deleteById(id);
+        if (deleted) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping ("/order/{personnummer}")
-    public ResponseEntity<List<Booking>> getPastBookings(@PathVariable String personnummer) {
-        return ResponseEntity.ok(bookingService.getPastBookingForCustomer(personnummer));
-    }
+    @PostMapping ("/admin/addcustomer")
+    public ResponseEntity<User> addCustomer(@RequestBody User newUser) {
+        newUser.setId(null);// låta databasen ge Id.
+        User created = userService.save(newUser);
+        return ResponseEntity.ok(created);
 
-    @PutMapping ("/updateinfo/{userId}")
-    public ResponseEntity<User> updateUserInfo(@PathVariable Long userId, @RequestBody User updatedUser) {
-        return ResponseEntity.ok(userService.updateUserInfo(userId,updatedUser));
     }
 
 }
