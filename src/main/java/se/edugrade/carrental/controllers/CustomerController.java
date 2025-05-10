@@ -1,6 +1,8 @@
 package se.edugrade.carrental.controllers;
 
 
+import org.apache.coyote.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -66,11 +68,10 @@ public class CustomerController {
     }
 
     @PostMapping ("/admin/addcustomer")
-    public ResponseEntity<User> addCustomer(@RequestBody User newUser) {
-        newUser.setId(null);// låta databasen ge Id.
+    public ResponseEntity<User> addCustomer(@RequestBody User newUser)
+    {
         User created = userService.save(newUser);
-        return ResponseEntity.ok(created);
-
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
 }

@@ -29,7 +29,6 @@ public class UserService implements UserServiceInterface {
         existingUser.setAddress(updatedUser.getAddress());
         existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
         existingUser.setEmail(updatedUser.getEmail());
-        existingUser.setRole(updatedUser.getRole());
 
         return userRepository.save(existingUser);
     }
