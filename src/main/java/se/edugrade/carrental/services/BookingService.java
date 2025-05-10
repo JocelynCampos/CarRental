@@ -61,7 +61,7 @@ public class BookingService implements BookingServiceInterface {
 
     public void deleteBooking (Long booking_id, boolean isAdmin) {
         Booking booking = bookingRepository.findById(booking_id)
-                        .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", booking_id));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", booking_id));
 
         bookingRepository.deleteById(booking_id);
         if (isAdmin) {
@@ -113,7 +113,7 @@ public class BookingService implements BookingServiceInterface {
     private void printDeletedBookingsToAdmin(Booking booking) {
         if (booking != null) {
             adminLogger.info("You deleted booking " + booking.getId()
-            + "that belonged to user " + booking.getUser().getSocialSecurityNumber() +
+                    + "that belonged to user " + booking.getUser().getSocialSecurityNumber() +
                     " for car " + booking.getCar().getBrand() + booking.getCar() + booking.getCar().getModel());
         }
     }
