@@ -55,7 +55,8 @@ public class UserService implements UserServiceInterface {
     }
 
     public Boolean deleteById(Long id) {
-        if (userRepository.existsById(id)) {
+        if (userRepository.findById(id).isPresent())
+        {
             userRepository.deleteById(id);
             return true;
         }
