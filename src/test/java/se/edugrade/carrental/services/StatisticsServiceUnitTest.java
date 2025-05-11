@@ -113,6 +113,8 @@ class StatisticsServiceUnitTest
     @Test
     void getMostPopularPeriodShouldReturnMostPopularPeriod()
     {
+        // bookingOne: Jan 1–5
+        // bookingTwo: Jan 2–4 => overlap on Jan 2–4 (2 bookings)
         when(bookingService.findAllBookings()).thenReturn(List.of(bookingOne, bookingTwo));
 
         String result = service.getMostPopularPeriod();
@@ -127,6 +129,55 @@ class StatisticsServiceUnitTest
 
         assertThrows(ResourceNotFoundException.class, () -> service.getMostPopularPeriod());
     }
+
+    @Test
+    void getMostPopularPeriodShouldHandleSingleBooking()
+    {
+        // Only bookingOne: Jan 1–5
+        when(bookingService.findAllBookings()).thenReturn(List.of(bookingOne));
+
+        String result = service.getMostPopularPeriod();
+
+        assertEquals("Most popular period: 2025-01-01 to 2025-01-05", result);
+    }
+
+    @Test
+    void getMostPopularPeriodShouldReturnLongestMaxPeriodIfMultiple()
+    {
+        // bookingOne: Mar 10–13 (4 days overlap)
+        // bookingTwo: Jan 1–3
+        bookingOne.setDateWhenPickedUp(LocalDate.of(2025, 3, 10));
+        bookingOne.setDateWhenTurnedIn(LocalDate.of(2025, 3, 13));
+
+        bookingTwo.setDateWhenPickedUp(LocalDate.of(2025, 1, 1));
+        bookingTwo.setDateWhenTurnedIn(LocalDate.of(2025, 1, 3));
+
+        when(bookingService.findAllBookings()).thenReturn(List.of(bookingOne, bookingTwo));
+
+        String result = service.getMostPopularPeriod();
+
+        assertEquals("Most popular period: 2025-03-10 to 2025-03-13", result);
+    }
+
+    @Test
+    void getMostPopularPeriodShouldHandleGapsInPopularDates()
+    {
+        // bookingOne: Jan 1–1
+        // bookingTwo: Jan 3–3 => max on 1st and 3rd, but not consecutive
+        bookingOne.setDateWhenPickedUp(LocalDate.of(2025, 1, 1));
+        bookingOne.setDateWhenTurnedIn(LocalDate.of(2025, 1, 1));
+
+        bookingTwo.setDateWhenPickedUp(LocalDate.of(2025, 1, 3));
+        bookingTwo.setDateWhenTurnedIn(LocalDate.of(2025, 1, 3));
+
+        when(bookingService.findAllBookings()).thenReturn(List.of(bookingOne, bookingTwo));
+
+        String result = service.getMostPopularPeriod();
+
+        // Should pick either 1st or 3rd, but by sorting, picks 2025-01-01
+        assertEquals("Most popular period: 2025-01-01 to 2025-01-01", result);
+    }
+
 
     @Test
     void getMostRentedBrandShouldReturnMostRentedBrand()
@@ -144,11 +195,11 @@ class StatisticsServiceUnitTest
         //Lägger till en extra bookingOne för att testa att första bilen dyker upp 2 gånger.
         when(bookingService.findAllBookings()).thenReturn(List.of(bookingOne, bookingTwo, bookingThree, bookingOne));
 
-        Map<String, Long> result = service.getCarRentalCounts();
+        Map<String, Integer> result = service.getCarRentalCounts();
 
-        assertEquals(2L, result.get("ABC123"));
-        assertEquals(1L, result.get("ABC456"));
-        assertEquals(1L, result.get("ABC789"));
+        assertEquals(2, result.get("ABC123"));
+        assertEquals(1, result.get("ABC456"));
+        assertEquals(1, result.get("ABC789"));
         assertEquals(3, result.size());
     }
 

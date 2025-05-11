@@ -15,7 +15,7 @@ INSERT INTO cars (price_per_day, brand, model, registration_number, status) VALU
 
 INSERT INTO booking (total_cost, date_when_picked_up, date_when_turned_in, car_id, user_id) VALUES
 ( 1084, '2025-04-01', '2025-04-03', 1, 1), -- Toyota, Anna
-( 1887, '2025-04-05', '2025-04-08', 2, 2), -- Mercedes, Erik
+( 1887, '2025-04-02', '2025-04-08', 2, 2), -- Mercedes, Erik
 ( 2636, '2025-04-10', '2025-04-14', 6, 3); -- Toyota, Maria
 
 SELECT 1;
