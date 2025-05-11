@@ -1,5 +1,6 @@
 package se.edugrade.carrental.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -28,8 +29,10 @@ public class Booking
     @ManyToOne
     @JoinColumn(name = "car_id")
     private Car car;
-    @ManyToOne
+
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     public Booking(int totalCost, LocalDate dateWhenPickedUp, LocalDate dateWhenTurnedIn, Car car, User user) {

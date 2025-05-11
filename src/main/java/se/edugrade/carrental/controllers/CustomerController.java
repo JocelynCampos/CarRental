@@ -62,9 +62,9 @@ public class CustomerController {
     public ResponseEntity<?> deleteCustomerById(@PathVariable long id) {
         boolean deleted = userService.deleteById(id);
         if (deleted) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping ("/admin/addcustomer")

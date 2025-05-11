@@ -2,6 +2,8 @@ package se.edugrade.carrental.entities;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 /*Erik Edman*/
 
 @Entity
@@ -30,16 +32,20 @@ public class User
     @Column(name = "email", length = 30)
     private String email;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Booking> bookings;
+
     public User() {
     }
 
-    public User(String socialSecurityNumber, String firstName, String lastName, String address, String phoneNumber, String email) {
+    public User(String socialSecurityNumber, String firstName, String lastName, String address, String phoneNumber, String email, List<Booking> bookings) {
         this.socialSecurityNumber = socialSecurityNumber;
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        this.bookings = bookings;
     }
 
     public Long getId() {
@@ -96,5 +102,13 @@ public class User
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
     }
 }
