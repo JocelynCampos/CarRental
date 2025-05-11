@@ -1,8 +1,10 @@
 package se.edugrade.carrental.controllers;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 import se.edugrade.carrental.entities.Car;
 import se.edugrade.carrental.vo.CarVO;
 import se.edugrade.carrental.services.CarServiceInterface;
@@ -28,7 +30,7 @@ public class CarController
     // Admin Endpoints
 
     @GetMapping("/admin/cars")
-    public List<Car> getAvailableCarsAdmin() {
+    public List<Car> getAvailableCars() {
         return carService.getAvailableCars();
     }
 
@@ -38,17 +40,19 @@ public class CarController
     }
 
     @PostMapping("/admin/addcar")
-    public Car addCar(@RequestBody Car car) {
-        return carService.addCar(car);
+    public ResponseEntity<Car> addCar(@RequestBody Car car) {
+        Car saved = carService.addCar(car);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @PutMapping("/admin/updatecar")
-    public Car updateCar(@RequestBody Car car) {
-        return carService.updateCar(car);
+    public ResponseEntity<Car> updateCar(@RequestBody Car car) {
+        return ResponseEntity.ok(carService.updateCar(car));
     }
 
     @DeleteMapping("/admin/removecar")
-    public void deleteCar(@RequestParam Long id) {
+    public ResponseEntity<Void> deleteCar(@RequestParam Long id) {
         carService.removeCar(id);
+        return ResponseEntity.noContent().build();
     }
 }

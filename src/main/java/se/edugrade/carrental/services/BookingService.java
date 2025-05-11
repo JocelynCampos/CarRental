@@ -146,7 +146,7 @@ public class BookingService implements BookingServiceInterface {
     private void printDeletedBookingsToAdmin(Booking booking) {
         if (booking != null) {
             adminLogger.info("You deleted booking " + booking.getId()
-            + "that belonged to user " + booking.getUser().getSocialSecurityNumber() +
+                    + "that belonged to user " + booking.getUser().getSocialSecurityNumber() +
                     " for car " + booking.getCar().getBrand() + booking.getCar() + booking.getCar().getModel());
         }
     }

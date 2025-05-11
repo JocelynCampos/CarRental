@@ -21,36 +21,25 @@ public class User
     @Column(name = "last_name", nullable = false, length = 40)
     private String lastName;
 
-    @Column(name = "address", nullable = false, length = 50)
+    @Column(name = "address", length = 50)
     private String address;
 
-    @Column(name = "phone_number", nullable = false, length = 20)
+    @Column(name = "phone_number", length = 20)
     private String phoneNumber;
 
-    @Column(name = "email", nullable = true, length = 30)
+    @Column(name = "email", length = 30)
     private String email;
-
-    @Enumerated(EnumType.STRING)
-    @Column (nullable = false)
-    private Role role;
-
-
-    public enum Role {
-        CUSTOMER,
-        ADMIN
-    }
 
     public User() {
     }
 
-    public User(String socialSecurityNumber, String firstName, String lastName, String address, String phoneNumber, String email, Role role) {
+    public User(String socialSecurityNumber, String firstName, String lastName, String address, String phoneNumber, String email) {
         this.socialSecurityNumber = socialSecurityNumber;
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.email = email;
-        this.role = role;
     }
 
     public Long getId() {
@@ -107,13 +96,5 @@ public class User
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 }
