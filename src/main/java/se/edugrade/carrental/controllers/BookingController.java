@@ -18,10 +18,16 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final UserService userService;
 
     @Autowired
-    public BookingController(BookingService bookingService) {
+    public BookingController(BookingService bookingService, UserService userService) {
         this.bookingService = bookingService;
+        this.userService = userService;
+    }
+
+    private User getLoggedInUser(Principal principal) {
+        return userService.findBySocialSecurityNumber(principal.getName());
     }
 
     /************************ CUSTOMER ENDPOINTS ******************************/
@@ -63,11 +69,10 @@ public class BookingController {
 
     @GetMapping("/activeorders") //Se aktiva bokningar användare
     public ResponseEntity<List<Booking>> activeOrders(Principal principal) {
-        String loggedInUser = principal.getName();
 
-        User user = bookingService.getUserRepository()
-                .findby
-        List<Booking> activeOrders = bookingService.getUserActiveOrders(userId);
+        User user = getLoggedInUser(principal);
+        List<Booking> activeOrders = bookingService.getUserActiveOrders(user.getId());
+
         if (activeOrders.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -75,8 +80,10 @@ public class BookingController {
     }
 
     @GetMapping("/orders") //se tidigare bokningar
-    public ResponseEntity<List<Booking>> orders(Long userId) {
-        List<Booking> orders = bookingService.getUserExpiredBookings(userId);
+    public ResponseEntity<List<Booking>> orders (Principal principal) {
+        User user = getLoggedInUser(principal);
+        List<Booking> orders = bookingService.getUserExpiredBookings(user.getId());
+
         if (orders.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -116,5 +123,7 @@ public class BookingController {
         bookingService.deleteBookingsBeforeDate(targetDate);
         return ResponseEntity.noContent().build();
     }
+
+
 
 }
