@@ -1,7 +1,6 @@
 package se.edugrade.carrental.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,14 +16,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 // Hugo Ransvi
 
+@WithMockUser(username = "admin", password = "admin", roles = {"ADMIN"})
 @SpringBootTest
 @AutoConfigureMockMvc
 public class CarControllerIntegrationTest {
-
-    @BeforeEach
-    void clearDataBase() {
-        carRepository.deleteAll();
-    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,21 +31,35 @@ public class CarControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void testAddAndGetCar() throws Exception {
-        Car car = new Car(400, "Kia", "EV9 GT", "ABC123", Car.CarStatus.FREE);
+    void getAllCars_returnsFreeCarsOnly() throws Exception {
+        mockMvc.perform(get("/api/v1/admin/cars"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].status").value(org.hamcrest.Matchers.everyItem(org.hamcrest.Matchers.is("FREE"))));
+    }
 
+    @Test
+    void addCar_createsNewCar() throws Exception {
+        Car car = new Car(300, "Mitsubishi", "Space Star", "ABC123", Car.CarStatus.FREE);
         String json = objectMapper.writeValueAsString(car);
 
-        // POST
         mockMvc.perform(post("/api/v1/admin/addcar")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.brand").value("Mitsubishi"));
+    }
 
-        // GET
-        mockMvc.perform(get("/api/v1/admin/allcars"))
+    @Test
+    void updateCar_updatesExistingCar() throws Exception {
+        Car car = new Car(300, "Mitsubishi", "Space Star", "ABC123", Car.CarStatus.FREE);
+        Car saved = carRepository.save(car);
+        saved.setBrand("Ferrari");
+        String json = objectMapper.writeValueAsString(saved);
+
+        mockMvc.perform(put("/api/v1/admin/updatecar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].brand").value("Kia"));
+                .andExpect(jsonPath("$.brand").value("Ferrari"));
     }
 }

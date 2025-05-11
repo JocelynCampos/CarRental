@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.edugrade.carrental.entities.Booking;
+import se.edugrade.carrental.entities.User;
 import se.edugrade.carrental.services.BookingService;
+import se.edugrade.carrental.services.UserService;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -16,10 +18,16 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final UserService userService;
 
     @Autowired
-    public BookingController(BookingService bookingService) {
+    public BookingController(BookingService bookingService, UserService userService) {
         this.bookingService = bookingService;
+        this.userService = userService;
+    }
+
+    private User getLoggedInUser(Principal principal) {
+        return userService.findBySocialSecurityNumber(principal.getName());
     }
 
     /************************ CUSTOMER ENDPOINTS ******************************/
@@ -31,7 +39,7 @@ public class BookingController {
                             @RequestParam String endDate) {
 
 
-        return bookingService.makeBooking(
+        return bookingService.createBooking(
                 userId,
                 carId,
                 LocalDate.parse(startDate),
@@ -54,14 +62,17 @@ public class BookingController {
             return ResponseEntity.badRequest().body("Cancellation of previous bookings not possible.");
         }
 
-        bookingService.cancelBooking(bookingId);
+        bookingService.cancelUserBooking(bookingId);
 
         return ResponseEntity.ok("Booking cancelled.");
     }
 
-    @GetMapping("/activeorders") //Se aktiva bokningar
-    public ResponseEntity<List<Booking>> activeOrders() {
-        List<Booking> activeOrders = bookingService.getActiveOrders();
+    @GetMapping("/activeorders") //Se aktiva bokningar användare
+    public ResponseEntity<List<Booking>> activeOrders(Principal principal) {
+
+        User user = getLoggedInUser(principal);
+        List<Booking> activeOrders = bookingService.getUserActiveOrders(user.getId());
+
         if (activeOrders.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -69,8 +80,10 @@ public class BookingController {
     }
 
     @GetMapping("/orders") //se tidigare bokningar
-    public ResponseEntity<List<Booking>> orders() {
-        List<Booking> orders = bookingService.expiredBookings();
+    public ResponseEntity<List<Booking>> orders (Principal principal) {
+        User user = getLoggedInUser(principal);
+        List<Booking> orders = bookingService.getUserExpiredBookings(user.getId());
+
         if (orders.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -81,7 +94,7 @@ public class BookingController {
 
     @GetMapping("/admin/activeorders") //Lista alla aktiva ordrar
     public ResponseEntity<List<Booking>> adminActiveOrders() {
-        List<Booking> adminActiveOrders = bookingService.getActiveOrders();
+        List<Booking> adminActiveOrders = bookingService.getAdminActiveOrders();
         if (adminActiveOrders.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -90,7 +103,7 @@ public class BookingController {
 
     @GetMapping("/admin/orders") // Lista historiska ordrar
     public ResponseEntity <List<Booking>> adminOrders() {
-        List<Booking> adminExpiredOrders = bookingService.expiredBookings();
+        List<Booking> adminExpiredOrders = bookingService.getAdminExpiredBookings();
         if (adminExpiredOrders.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -100,7 +113,7 @@ public class BookingController {
 
     @DeleteMapping("/admin/removeorder") //Ta bort bokning från systemet
     public ResponseEntity <Void> adminRemoveOrder(@RequestParam Long bookingId) {
-        bookingService.deleteBooking(bookingId, true);
+        bookingService.deleteBookingAdmin(bookingId, true);
         return ResponseEntity.noContent().build();
     }
 
@@ -110,5 +123,7 @@ public class BookingController {
         bookingService.deleteBookingsBeforeDate(targetDate);
         return ResponseEntity.noContent().build();
     }
+
+
 
 }

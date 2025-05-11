@@ -10,7 +10,7 @@ public interface StatisticsServiceInterface
 {
     String getMostPopularPeriod();
     String getMostRentedBrand();
-    Map<String, Long> getCarRentalCounts();
+    Map<String, Integer> getCarRentalCounts();
     double getAverageBookingCost();
     Map<String, Integer> getRevenuePerCar();
     Integer getTotalRevenue();

@@ -6,10 +6,12 @@ import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.edugrade.carrental.entities.Booking;
+import se.edugrade.carrental.entities.Car;
 import se.edugrade.carrental.exceptions.ResourceNotFoundException;
 
 import java.lang.module.ResolutionException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -30,57 +32,67 @@ public class StatisticsService implements StatisticsServiceInterface
     public String getMostPopularPeriod()
     {
         List<Booking> bookings = bookingService.findAllBookings();
-
-        if(bookings.isEmpty())
+        if (bookings.isEmpty())
         {
-            throw new ResourceNotFoundException("Bookings", "List<Booking>", bookings);
+            throw new ResourceNotFoundException("Bookings", "List<Bookings>", bookings);
         }
 
-        // Step 1: Create a list of events: +1 for start, -1 for end + 1
-        TreeMap<LocalDate, Integer> events = new TreeMap<>();
-        for(Booking booking : bookings)
+        Map<LocalDate, Integer> dateCounts = new HashMap<>();
+
+        // Count active bookings for each day
+        for (Booking booking : bookings)
         {
-            events.merge(booking.getDateWhenPickedUp(), 1, Integer::sum);
-            events.merge(booking.getDateWhenTurnedIn().plusDays(1), -1, Integer::sum);
+            LocalDate start = booking.getDateWhenPickedUp();
+            LocalDate end = booking.getDateWhenTurnedIn();
+
+            for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1))
+            {
+                dateCounts.put(date, dateCounts.getOrDefault(date, 0) + 1);
+            }
         }
 
-        //Step 2: Sweep through the dates to track active booking and max overlap
-        int active = 0;
-        int maxActive = 0;
+        // Find max count
+        int max = dateCounts.values().stream().max(Integer::compareTo).orElse(0);
+
+        // Find all dates with max activity
+        List<LocalDate> maxDates = dateCounts.entrySet().stream()
+                .filter(e -> e.getValue() == max)
+                .map(Map.Entry::getKey)
+                .sorted()
+                .toList();
+
+        // Group consecutive maxDates to find longest period
         LocalDate bestStart = null;
         LocalDate bestEnd = null;
+        LocalDate tempStart = null;
 
-        for(Map.Entry<LocalDate, Integer> entry : events.entrySet())
+        for (int i = 0; i < maxDates.size(); i++)
         {
-            LocalDate date = entry.getKey();
-            active += entry.getValue();
+            LocalDate current = maxDates.get(i);
 
-            if(active > maxActive)
+            if (tempStart == null)
             {
-                maxActive = active;
-                bestStart = date;
-                bestEnd = null;
+                tempStart = current;
             }
-            else if(active < maxActive && bestStart != null && bestEnd == null)
+
+            boolean isLast = i == maxDates.size() - 1;
+            boolean isGap = !isLast && !maxDates.get(i + 1).equals(current.plusDays(1));
+
+            if (isGap || isLast)
             {
-                bestEnd = date.minusDays(1);
+                LocalDate tempEnd = current;
+                if (bestStart == null || (tempEnd.toEpochDay() - tempStart.toEpochDay()) > (bestEnd.toEpochDay() - bestStart.toEpochDay()))
+                {
+                    bestStart = tempStart;
+                    bestEnd = tempEnd;
+                }
+                tempStart = null;
             }
         }
 
-        if(bestStart != null && bestEnd == null)
-        {
-            bestEnd = events.lastKey();
-        }
-
-        if(bestStart != null && bestEnd != null)
-        {
-            return "Most popular period: " + bestStart +" to " + bestEnd;
-        }
-        else
-        {
-            throw new NullPointerException();
-        }
+        return "Most popular period: " + bestStart + " to " + bestEnd;
     }
+
 
     @Override
     public String getMostRentedBrand()
@@ -94,12 +106,12 @@ public class StatisticsService implements StatisticsServiceInterface
     }
 
     @Override
-    public Map<String, Long> getCarRentalCounts()
+    public Map<String, Integer> getCarRentalCounts()
     {
         return bookingService.findAllBookings().stream()
                 .collect(Collectors.groupingBy(
-                        b-> b.getCar().getRegistrationNumber(),
-                        Collectors.counting()
+                        b -> b.getCar().getRegistrationNumber(),
+                        Collectors.reducing(0, e -> 1, Integer::sum)
                 ));
     }
 
@@ -108,6 +120,7 @@ public class StatisticsService implements StatisticsServiceInterface
     {
         double nrOfBookings = bookingService.findAllBookings().size();
         double cost = 0;
+
         List<Booking> bookings = bookingService.findAllBookings();
 
         for(Booking booking : bookings)
