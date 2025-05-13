@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 // Skapat av Mohamed
 
 @ExtendWith(MockitoExtension.class)
-public class CustomerServiceUnitTest {
+public class UserServiceUnitTest {
 
     @Mock
     UserRepository userRepo;
