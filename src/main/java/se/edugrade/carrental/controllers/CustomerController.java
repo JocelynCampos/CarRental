@@ -1,7 +1,4 @@
 package se.edugrade.carrental.controllers;
-
-
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -38,7 +35,7 @@ public class CustomerController {
         existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
         existingUser.setAddress(updatedUser.getAddress());
         existingUser.setEmail(updatedUser.getEmail());
-        // (dock ej personnumret)
+        // (ej personnumret)
 
         userService.save(existingUser);
         return ResponseEntity.ok(existingUser);
@@ -60,11 +57,20 @@ public class CustomerController {
 
     @DeleteMapping ("/admin/removecustomer/{id}")
     public ResponseEntity<?> deleteCustomerById(@PathVariable long id) {
+        User user = userService.findById(id);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Kunden med ID" + id + "hittades inte.");
+        }
+
+        userService.deleteById(id);
+        return ResponseEntity.ok("Kunden med ID" + id + "har raderats.");
+
         boolean deleted = userService.deleteById(id);
         if (deleted) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
         return ResponseEntity.notFound().build();
+
     }
 
     @PostMapping ("/admin/addcustomer")
