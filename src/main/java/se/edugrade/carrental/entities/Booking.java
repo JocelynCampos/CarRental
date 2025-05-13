@@ -1,5 +1,6 @@
 package se.edugrade.carrental.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -22,22 +23,35 @@ public class Booking
     @Column
     private LocalDate dateWhenTurnedIn;
 
+    @Enumerated(EnumType.STRING)
+    @Column
+    private BookingStatus status;
+
     public Booking() {
     }
 
     @ManyToOne
     @JoinColumn(name = "car_id")
     private Car car;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
-    public Booking(int totalCost, LocalDate dateWhenPickedUp, LocalDate dateWhenTurnedIn, Car car, User user) {
+    public Booking(int totalCost, LocalDate dateWhenPickedUp, LocalDate dateWhenTurnedIn, Car car, User user, BookingStatus status) {
         this.totalCost = totalCost;
         this.dateWhenPickedUp = dateWhenPickedUp;
         this.dateWhenTurnedIn = dateWhenTurnedIn;
         this.car = car;
         this.user = user;
+        this.status = BookingStatus.ACTIVE;
+    }
+
+    public enum BookingStatus {
+        ACTIVE,
+        CANCELLED,
+        COMPLETED
     }
 
     public Long getId() {
@@ -72,6 +86,13 @@ public class Booking
         this.dateWhenTurnedIn = dateWhenTurnedIn;
     }
 
+    public BookingStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(BookingStatus status) {
+        this.status = status;
+    }
 
     public Car getCar() { return car; }
 
