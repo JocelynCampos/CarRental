@@ -37,8 +37,8 @@ public class CustomerController {
         existingUser.setEmail(updatedUser.getEmail());
         // (ej personnumret)
 
-        userService.save(existingUser);
-        return ResponseEntity.ok(existingUser);
+
+        return ResponseEntity.ok(userService.save(existingUser));
     }
 
     @GetMapping("/admin/customers")
@@ -55,22 +55,10 @@ public class CustomerController {
         return ResponseEntity.ok(user);
     }
 
-    @DeleteMapping ("/admin/removecustomer/{id}")
-    public ResponseEntity<?> deleteCustomerById(@PathVariable long id) {
-        User user = userService.findById(id);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Kunden med ID" + id + "hittades inte.");
-        }
-
-        userService.deleteById(id);
-        return ResponseEntity.ok("Kunden med ID" + id + "har raderats.");
-
-        boolean deleted = userService.deleteById(id);
-        if (deleted) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-        return ResponseEntity.notFound().build();
-
+    @DeleteMapping("/admin/removecustomer/{id}")
+    public ResponseEntity<Void> deleteCustomerById(@PathVariable Long id) {
+      userService.deleteUser(id);
+      return ResponseEntity.noContent().build();
     }
 
     @PostMapping ("/admin/addcustomer")
