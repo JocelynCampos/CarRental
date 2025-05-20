@@ -1,0 +1,29 @@
+2025-05-20 15:40:43.433 [http-nio-9090-exec-1] INFO  AdminLogger - ADMIN: Updating user info for SSN: 19881122-3456
+2025-05-20 15:40:43.433 [http-nio-9090-exec-1] INFO  AdminLogger - ADMIN: Searching user by SSN: 19881122-3456
+2025-05-20 15:40:43.763 [http-nio-9090-exec-1] INFO  AdminLogger - ADMIN: Successfully updated user info for SSN: 19881122-3456
+2025-05-20 15:40:50.347 [http-nio-9090-exec-3] INFO  AdminLogger - ADMIN: Finding all users
+2025-05-20 15:41:05.132 [http-nio-9090-exec-4] INFO  AdminLogger - ADMIN: Finding user by ID: 5
+2025-05-20 15:41:16.418 [http-nio-9090-exec-5] INFO  AdminLogger - ADMIN: Saving new user: se.edugrade.carrental.entities.User@35fa8fe7
+2025-05-20 15:41:23.246 [http-nio-9090-exec-6] INFO  AdminLogger - ADMIN: Finding user by ID: 4
+2025-05-20 15:41:23.767 [http-nio-9090-exec-6] INFO  AdminLogger - ADMIN: Deleting user with ID: 4
+2025-05-20 16:51:46.640 [http-nio-9090-exec-1] INFO  AdminLogger - ADMIN: Updating user info for SSN: 19881122-3456
+2025-05-20 16:51:46.640 [http-nio-9090-exec-1] INFO  AdminLogger - ADMIN: Searching user by SSN: 19881122-3456
+2025-05-20 16:51:46.734 [http-nio-9090-exec-1] INFO  AdminLogger - ADMIN: Successfully updated user info for SSN: 19881122-3456
+2025-05-20 16:51:54.308 [http-nio-9090-exec-4] INFO  AdminLogger - ADMIN: Finding all users
+2025-05-20 16:52:05.041 [http-nio-9090-exec-5] INFO  AdminLogger - ADMIN: Finding user by ID: 5
+2025-05-20 16:52:11.882 [http-nio-9090-exec-6] INFO  AdminLogger - ADMIN: Saving new user: se.edugrade.carrental.entities.User@2407f6b7
+2025-05-20 16:52:18.468 [http-nio-9090-exec-3] INFO  AdminLogger - ADMIN: Finding user by ID: 4
+2025-05-20 16:52:18.470 [http-nio-9090-exec-3] INFO  AdminLogger - ADMIN: Deleting user with ID: 4
+2025-05-20 17:13:38.777 [main] INFO  AdminLogger - ADMIN: Finding all users
+2025-05-20 17:13:38.801 [main] INFO  AdminLogger - ADMIN: Saving new user: se.edugrade.carrental.entities.User@706fe5c6
+2025-05-20 17:14:12.148 [main] INFO  AdminLogger - ADMIN: Finding all users
+2025-05-20 17:14:12.170 [main] INFO  AdminLogger - ADMIN: Saving new user: se.edugrade.carrental.entities.User@59cda16e
+2025-05-20 17:16:27.982 [main] INFO  AdminLogger - ADMIN: Finding user by ID: 99999
+2025-05-20 17:16:27.986 [main] ERROR AdminLogger - ADMIN: User with ID 99999 not found
+2025-05-20 17:16:28.091 [main] INFO  AdminLogger - ADMIN: Updating user info for SSN: 19950505-7890
+2025-05-20 17:16:28.091 [main] INFO  AdminLogger - ADMIN: Searching user by SSN: 19950505-7890
+2025-05-20 17:16:28.107 [main] INFO  AdminLogger - ADMIN: Successfully updated user info for SSN: 19950505-7890
+2025-05-20 17:16:28.176 [main] INFO  AdminLogger - ADMIN: Finding user by ID: 7
+2025-05-20 17:16:28.199 [main] INFO  AdminLogger - ADMIN: Saving new user: se.edugrade.carrental.entities.User@1eedf268
+2025-05-20 17:16:28.203 [main] INFO  AdminLogger - ADMIN: Finding all users
+2025-05-20 17:16:28.462 [main] INFO  AdminLogger - ADMIN: Deleting user with ID: 9

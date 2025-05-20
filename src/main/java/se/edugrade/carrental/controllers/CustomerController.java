@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import se.edugrade.carrental.entities.User;
 import se.edugrade.carrental.services.UserService;
 
+//Logiken flyttad till service och tagit bort NOT_Found då exception hanteras i service.
 
 import java.util.List;
                       // Kamran Akbari
@@ -20,25 +21,16 @@ public class CustomerController {
         this.userService = userService;
     }
 
+
+
     @PutMapping("/updateinfo")
     public ResponseEntity<?> updateCustomerInfo(@RequestBody User updatedUser) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String socialSecurityNumber = auth.getName();
 
-        User existingUser = userService.findBySocialSecurityNumber(socialSecurityNumber);
-        if (existingUser == null) {
-            return ResponseEntity.notFound().build();
-        }
+        User savedUser = userService.updateUserInfoBySSN(socialSecurityNumber, updatedUser);
+        return ResponseEntity.ok(savedUser);
 
-        existingUser.setFirstName(updatedUser.getFirstName());
-        existingUser.setLastName(updatedUser.getLastName());
-        existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
-        existingUser.setAddress(updatedUser.getAddress());
-        existingUser.setEmail(updatedUser.getEmail());
-        // (ej personnumret)
-
-        userService.save(existingUser);
-        return ResponseEntity.ok(existingUser);
     }
 
     @GetMapping("/admin/customers")
@@ -49,21 +41,13 @@ public class CustomerController {
     @GetMapping ("/admin/customer/{id}")
     public ResponseEntity<User> getCustomerById(@PathVariable long id) {
         User  user = userService.findById(id);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(user);
     }
 
     @DeleteMapping ("/admin/removecustomer/{id}")
     public ResponseEntity<?> deleteCustomerById(@PathVariable long id) {
-        User user = userService.findById(id);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Kunden med ID" + id + "hittades inte.");
-        }
-
         userService.deleteById(id);
-        return ResponseEntity.ok("Kunden med ID" + id + "har raderats.");
+        return ResponseEntity.ok("Kunden med ID " + id + " har raderats.");
     }
 
     @PostMapping ("/admin/addcustomer")

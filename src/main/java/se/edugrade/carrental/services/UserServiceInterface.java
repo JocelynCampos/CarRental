@@ -6,12 +6,8 @@ import java.util.List;
 
 public interface UserServiceInterface
 {
-    User getUserById(Long id);
-    User updateUser(Long id, User user);
-    User saveUser(User user);
-    void deleteUser(Long id);
-
     //Kamran Akbari
+    User updateUserInfoBySSN(String socialSecurityNumber, User updatedUser);
     User findBySocialSecurityNumber(String socialSecurityNumber);
     List<User> findAll();
     User findById(Long id);
