@@ -16,7 +16,8 @@ import se.edugrade.carrental.repositories.UserRepository;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.*;
-
+ 
+// Kamran Akbari
 @SpringBootTest
 @AutoConfigureMockMvc
 public class CustomerControllerIntegrationTest {

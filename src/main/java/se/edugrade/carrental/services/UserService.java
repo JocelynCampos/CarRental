@@ -1,8 +1,8 @@
 package se.edugrade.carrental.services;
 
 import se.edugrade.carrental.entities.User;
+import se.edugrade.carrental.exceptions.UserNotFoundException;
 import se.edugrade.carrental.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,17 +12,23 @@ import java.util.List;
 @Service
 public class UserService implements UserServiceInterface {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
 
     @Override
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Override
     public User updateUser(Long id, User updatedUser) {
-        User existingUser = userRepository.findById(id).orElseThrow();
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
 
         existingUser.setFirstName(updatedUser.getFirstName());
         existingUser.setLastName(updatedUser.getLastName());
@@ -33,6 +39,7 @@ public class UserService implements UserServiceInterface {
         return userRepository.save(existingUser);
     }
 
+
     @Override
     public User saveUser(User user) {
 
@@ -41,7 +48,9 @@ public class UserService implements UserServiceInterface {
 
     @Override
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+        userRepository.delete(user);
     }
 
                                 // Kamran Akbari
@@ -51,20 +60,22 @@ public class UserService implements UserServiceInterface {
     }
 
     public User findById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
+
 
     public Boolean deleteById(Long id) {
-        if (userRepository.findById(id).isPresent())
-        {
+        if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
             return true;
+        } else {
+            throw new UserNotFoundException(id);
         }
-        return false;
     }
-
     public User findBySocialSecurityNumber(String socialSecurityNumber) {
-        return userRepository.findBySocialSecurityNumber(socialSecurityNumber).orElse(null);
+        return userRepository.findBySocialSecurityNumber(socialSecurityNumber)
+                .orElseThrow(() -> new RuntimeException("User with Social Security Number" + socialSecurityNumber + " not found"));
     }
 
     public User save(User user) {
