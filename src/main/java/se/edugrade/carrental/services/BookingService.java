@@ -1,18 +1,21 @@
 package se.edugrade.carrental.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import se.edugrade.carrental.entities.Booking;
 import se.edugrade.carrental.entities.Car;
 import se.edugrade.carrental.entities.User;
+import se.edugrade.carrental.exceptions.BookingCancellationException;
 import se.edugrade.carrental.exceptions.ResourceNotFoundException;
+import se.edugrade.carrental.helpMethods.BookingCalculator;
 import se.edugrade.carrental.repositories.BookingRepository;
 import se.edugrade.carrental.repositories.CarRepository;
 import se.edugrade.carrental.repositories.UserRepository;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.logging.Logger;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -21,7 +24,8 @@ public class BookingService implements BookingServiceInterface {
     private BookingRepository bookingRepository;
     private CarRepository carRepository;
     private UserRepository userRepository;
-    private static final Logger adminLogger = Logger.getLogger("adminLogger");
+
+    private static final Logger adminLogger = LoggerFactory.getLogger("AdminLogger");
 
     public BookingService(BookingRepository bookingRepository,CarRepository carRepository,UserRepository userRepository) {
         this.bookingRepository = bookingRepository;
@@ -44,7 +48,7 @@ public class BookingService implements BookingServiceInterface {
         newBooking.setDateWhenPickedUp(startDate);
         newBooking.setDateWhenTurnedIn(endDate);
 
-        int totalCost = calculateTotalCost(startDate, endDate, car.getPricePerDay());
+        int totalCost = BookingCalculator.calculateTotalCost(startDate, endDate, car.getPricePerDay());
         newBooking.setTotalCost(totalCost);
 
         return bookingRepository.save(newBooking);
@@ -56,7 +60,7 @@ public class BookingService implements BookingServiceInterface {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
         if (!isBookingActiveOrFuture(booking)) {
-            throw new IllegalStateException("Booking can not be cancelled.");
+            throw new BookingCancellationException("Booking: " + bookingId + "can not be cancelled.");
         }
         bookingRepository.delete(booking);
     }
@@ -86,6 +90,7 @@ public class BookingService implements BookingServiceInterface {
     //Aktiva ordrar
     public List<Booking> getAdminActiveOrders() {
         LocalDate today = LocalDate.now();
+        adminLogger.info("ADMIN: get active orders.");
         return bookingRepository.findAll().stream()
                 .filter(booking -> booking.getStatus() == Booking.BookingStatus.ACTIVE)
                 .filter(booking -> booking.getDateWhenPickedUp().isBefore(today)
@@ -96,6 +101,7 @@ public class BookingService implements BookingServiceInterface {
     //Lista historiska ordrar
     public List<Booking> getAdminExpiredBookings() {
         LocalDate today = LocalDate.now();
+        adminLogger.info("ADMIN: get expired orders.");
         return bookingRepository.findAll().stream()
                 .filter(booking -> booking.getDateWhenTurnedIn().isBefore(today))
                 .filter(booking -> booking.getStatus() == Booking.BookingStatus.ACTIVE)
@@ -129,6 +135,7 @@ public class BookingService implements BookingServiceInterface {
     }
 
     public Booking getBookingById(Long booking_id) {
+        adminLogger.info("Get booking by id: {}", booking_id);
         return bookingRepository.findById(booking_id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", booking_id));
     }
@@ -139,22 +146,19 @@ public class BookingService implements BookingServiceInterface {
 
     public boolean isBookingActiveOrFuture(Booking booking) {
         LocalDate today = LocalDate.now();
+        adminLogger.info("Checking if booking is active or future: {}", booking);
         return booking.getDateWhenTurnedIn().isAfter(today);
     }
 
 
     private void printDeletedBookingsToAdmin(Booking booking) {
         if (booking != null) {
-            adminLogger.info("You deleted booking " + booking.getId()
-                    + "that belonged to user " + booking.getUser().getSocialSecurityNumber() +
-                    " for car " + booking.getCar().getBrand() + booking.getCar() + booking.getCar().getModel());
+            adminLogger.info("You deleted booking {} for user {}. Car: {} {}",
+            booking.getId(),
+            booking.getUser().getSocialSecurityNumber(),
+            booking.getCar().getBrand(),
+            booking.getCar().getModel());
         }
-    }
-
-    @Override
-    public int calculateTotalCost(LocalDate startDate, LocalDate endDate, int pricePerDay) {
-        long numberOfDays = ChronoUnit.DAYS.between(startDate, endDate);
-        return (int) (numberOfDays * pricePerDay);
     }
 
     public BookingRepository getBookingRepository() {

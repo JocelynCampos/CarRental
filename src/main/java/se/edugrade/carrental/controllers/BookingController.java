@@ -1,6 +1,7 @@
 package se.edugrade.carrental.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,18 +34,14 @@ public class BookingController {
     /************************ CUSTOMER ENDPOINTS ******************************/
 
     @PostMapping("/addorder") //Skapa order
-    public Booking addOrder(@RequestParam Long userId,
+    public ResponseEntity<Booking> addOrder(@RequestParam Long userId,
                             @RequestParam Long carId,
-                            @RequestParam String startDate,
-                            @RequestParam String endDate) {
+                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
 
-        return bookingService.createBooking(
-                userId,
-                carId,
-                LocalDate.parse(startDate),
-                LocalDate.parse(endDate)
-        );
+        Booking booking = bookingService.createBooking(userId, carId, startDate, endDate);
+        return ResponseEntity.status(HttpStatus.CREATED).body(booking);
     }
 
     @PutMapping("/cancelorder") //Avboka order
@@ -118,9 +115,9 @@ public class BookingController {
     }
 
     @DeleteMapping("/admin/removeorders-beforedate/{date}") //
-    public ResponseEntity<Void> adminRemoveOrdersBeforeDate(@PathVariable String date) {
-        LocalDate targetDate = LocalDate.parse(date);
-        bookingService.deleteBookingsBeforeDate(targetDate);
+    public ResponseEntity<Void> adminRemoveOrdersBeforeDate(
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        bookingService.deleteBookingsBeforeDate(date);
         return ResponseEntity.noContent().build();
     }
 
